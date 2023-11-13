@@ -21,8 +21,8 @@ export default function App() {
   const uploadEndpoint = '/uploadImage'; // 이미지 업로드 엔드포인트 설정
   const [distanceResult, setDistanceResult] = useState('0m'); // 거리 정보 상태 변수
 
-  const SERVER_ADDRESS = `http://172.30.1.41:3000`;  
-  const wsClient = new W3CWebSocket('ws://172.30.1.41:3000'); // 실시간을 위한 웹소켓 연결
+  const SERVER_ADDRESS = `http://192.168.1.36:3000`;  
+  const wsClient = new W3CWebSocket('ws://192.168.1.36:3001'); // 실시간을 위한 웹소켓 연결
 
   // 어플 첫 실행 시 가이드 메시지
   const firstText = [
@@ -162,6 +162,7 @@ export default function App() {
   };
  */ 
   // 서버에서 실시간 거리 정보를 받아 상태 업데이트
+  // 실시간 거리 정보를 받아 상태 업데이트
   useEffect(() => {
     wsClient.onmessage = (message) => {
       const distanceData = JSON.parse(message.data);
@@ -179,7 +180,12 @@ export default function App() {
     return () => {
       wsClient.close();
     };
-  }, []);
+  }, [wsClient]);
+
+  // 거리 정보 갱신 시 서버로 전송
+  useEffect(() => {
+    sendDistance(distanceResult);
+  }, [distanceResult]);
 
   // 거리 정보 서버로 전송
   const sendDistance = async (depth) => {
@@ -310,7 +316,7 @@ export default function App() {
             
             {/* 실시간 거리 정보 표기 */}
             <View style={styles.distanceContainer}>
-            <Text style={styles.distanceText}>{distanceResult}</Text>
+              <Text style={styles.distanceText}>{distanceResult}</Text>
             </View>
             {/* 카메라 버튼 */}
             <TouchableOpacity

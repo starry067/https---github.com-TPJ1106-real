@@ -8,7 +8,8 @@ import cv2  # OpenCV 라이브러리 추가
 from websocket import create_connection
 
 # 웹소켓 서버 URL
-ws_url = "ws://172.30.1.41:3000"
+ws_url = "ws://192.168.1.36:3000"
+server_url = "http://192.168.1.36:3000/distance"  # /distance 엔드포인트로 변경
 
 # 웹소켓 클라이언트 생성
 ws = create_connection(ws_url)
@@ -78,7 +79,7 @@ def estimate_depth(image_path, x, y):
         file.write(str(disp_resized_np))
 
     # 거리를 서버로 전송
-    server_url = "http://172.30.1.41:3000/distance"  # /distance 엔드포인트로 변경
+
     payload = {"depth": depth_at_crosshair}
     response = requests.post(server_url, json=payload)
     if response.status_code == 200:

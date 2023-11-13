@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(cors()); // CORS 미들웨어 추가
 
 const server = http.createServer(app);
-const wss = new WebSocket.Server({ server }); // 웹소켓 연결 설정'
+const wss = new WebSocket.Server({ server}); // 웹소켓 연결 설정
 //CORS 설정
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -76,6 +76,13 @@ wss.on('connection', (ws) => {
         client.send(JSON.stringify({ depth: distanceResult }));
       }
     });
+  });
+});
+
+// 서버의 upgrade 이벤트에 웹소켓 서버를 붙입니다.
+server.on('upgrade', (request, socket, head) => {
+  wss.handleUpgrade(request, socket, head, (ws) => {
+    wss.emit('connection', ws, request);
   });
 });
 
